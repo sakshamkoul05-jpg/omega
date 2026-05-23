@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, ShoppingCart, ArrowLeft } from 'lucide-react'
 import { useProduct } from '../hooks/useProducts'
-import { getCategoryColor, getStockInfo, renderStars } from '../utils/formatters'
+import { getCategoryColor, getStockInfo, renderStars, formatPrice } from '../utils/formatters'
 import Skeleton from '../components/ui/Skeleton'
 import Badge from '../components/ui/Badge'
 
@@ -230,7 +230,7 @@ export default function ProductDetail() {
                 color: 'var(--accent-primary)',
               }}
             >
-              ${(product.price * (1 - (product.discountPercentage || 0) / 100)).toFixed(2)}
+              {formatPrice(product.price * (1 - (product.discountPercentage || 0) / 100))}
             </div>
             {discount && (
               <>
@@ -242,7 +242,7 @@ export default function ProductDetail() {
                     textDecoration: 'line-through',
                   }}
                 >
-                  ${product.price.toFixed(2)}
+                  {formatPrice(product.price)}
                 </span>
                 <span
                   className="text-xs font-semibold px-2 py-0.5 rounded"
@@ -300,7 +300,7 @@ export default function ProductDetail() {
             onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
           >
             <ShoppingCart size={18} />
-            Add to Cart — ${product.price.toFixed(2)}
+            Add to Cart — {formatPrice(product.price)}
           </button>
         </div>
       </div>

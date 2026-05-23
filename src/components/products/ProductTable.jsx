@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Eye } from 'lucide-react'
-import { getCategoryColor, getStockInfo, renderStars } from '../../utils/formatters'
+import { getCategoryColor, getStockInfo, renderStars, formatPrice } from '../../utils/formatters'
 import useUIStore from '../../store/uiStore'
 
 const ProductRow = memo(function ProductRow({ product, index }) {
@@ -82,7 +82,7 @@ const ProductRow = memo(function ProductRow({ product, index }) {
                     fontSize: 14,
                   }}
                 >
-                  ${product.price.toFixed(2)}
+                  {formatPrice(product.price)}
                 </span>
               </td>
             )

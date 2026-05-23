@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getCategoryColor, getStockInfo, renderStars } from '../../utils/formatters'
+import { getCategoryColor, getStockInfo, renderStars, formatPrice } from '../../utils/formatters'
 
 const ProductCard = memo(function ProductCard({ product }) {
   const navigate = useNavigate()
@@ -72,7 +72,7 @@ const ProductCard = memo(function ProductCard({ product }) {
             color: 'var(--accent-primary)',
           }}
         >
-          ${product.price.toFixed(2)}
+          {formatPrice(product.price)}
         </div>
         <div className="flex items-center gap-2">
           <span style={{ color: '#FFB347', fontSize: 13 }}>{renderStars(product.rating)}</span>

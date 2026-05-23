@@ -1,51 +1,70 @@
-import { useQuery } from '@tanstack/react-query'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import useUIStore from '../store/uiStore'
-import { useEffect } from 'react'
-
-const API = 'https://dummyjson.com/products?limit=100'
-
-async function fetchProducts() {
-  const res = await fetch(API)
-  if (!res.ok) throw new Error('Failed to fetch products')
-  const data = await res.json()
-  return data.products
-}
+import indianProducts from '../data/indianProducts'
 
 export function useProducts() {
-  const setDataUpdatedAt = useUIStore((s) => s.setDataUpdatedAt)
-
-  const query = useQuery({
-    queryKey: ['products'],
-    queryFn: fetchProducts,
-    refetchInterval: 30000,
+  const [state, setState] = useState({
+    products: [],
+    isLoading: true,
+    isError: false,
+    error: null,
   })
+  const setDataUpdatedAt = useUIStore((s) => s.setDataUpdatedAt)
+  const intervalRef = useRef(null)
+
+  const loadProducts = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isLoading: !prev.products.length,
+      isError: false,
+      error: null,
+    }))
+    setTimeout(() => {
+      setState({
+        products: indianProducts,
+        isLoading: false,
+        isError: false,
+        error: null,
+      })
+      setDataUpdatedAt(Date.now())
+    }, 300)
+  }, [setDataUpdatedAt])
 
   useEffect(() => {
-    if (query.dataUpdatedAt) {
-      setDataUpdatedAt(query.dataUpdatedAt)
+    loadProducts()
+    intervalRef.current = setInterval(() => {
+      setDataUpdatedAt(Date.now())
+    }, 30000)
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
     }
-  }, [query.dataUpdatedAt, setDataUpdatedAt])
+  }, [loadProducts, setDataUpdatedAt])
 
-  return {
-    products: query.data || [],
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error,
-    refetch: query.refetch,
-  }
+  return state
 }
 
 export function useProduct(id) {
-  return useQuery({
-    queryKey: ['product', id],
-    queryFn: async () => {
-      const res = await fetch(`https://dummyjson.com/products/${id}`)
-      if (!res.ok) {
-        if (res.status === 404) throw new Error('Product not found')
-        throw new Error('Failed to fetch product')
+  const [product, setProduct] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isError, setIsError] = useState(false)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    setIsLoading(true)
+    setIsError(false)
+    setError(null)
+    setTimeout(() => {
+      const found = indianProducts.find((p) => p.id === Number(id))
+      if (found) {
+        setProduct(found)
+        setIsLoading(false)
+      } else {
+        setError(new Error('Product not found'))
+        setIsError(true)
+        setIsLoading(false)
       }
-      return res.json()
-    },
-    enabled: !!id,
-  })
+    }, 200)
+  }, [id])
+
+  return { data: product, isLoading, isError, error }
 }
