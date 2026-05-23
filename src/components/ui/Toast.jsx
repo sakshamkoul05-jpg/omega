@@ -46,7 +46,7 @@ function ToastItem({ event, onDismiss }) {
         </p>
         {event.type === 'price_update' && (
           <p className="text-xs mt-0.5" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--text-muted)' }}>
-            ₹{event.oldValue.toFixed(2)} → <span style={{ color: 'var(--accent-primary)' }}>₹{event.newValue.toFixed(2)}</span>
+            ${event.oldValue.toFixed(2)} → <span style={{ color: 'var(--accent-primary)' }}>${event.newValue.toFixed(2)}</span>
           </p>
         )}
         {(event.type === 'stock_update' || event.type === 'restock') && (

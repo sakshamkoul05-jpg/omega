@@ -2,16 +2,12 @@ import { useEffect } from 'react'
 import useUIStore from '../store/uiStore'
 
 const API = 'https://dummyjson.com/products?limit=100'
-const USD_TO_INR = 87
 
 async function fetchProducts() {
   const res = await fetch(API)
   if (!res.ok) throw new Error('Failed to fetch products')
   const data = await res.json()
-  return data.products.map((p) => ({
-    ...p,
-    price: Math.round(p.price * USD_TO_INR * 100) / 100,
-  }))
+  return data.products
 }
 
 export function useProducts() {

@@ -54,7 +54,7 @@ const TopValueChart = memo(function TopValueChart({ data }) {
               tick={{ fill: 'var(--text-muted)', fontSize: 12, fontFamily: "'Outfit', sans-serif" }}
               axisLine={{ stroke: 'var(--bg-border)' }}
               tickLine={false}
-              tickFormatter={(val) => '₹' + (val / 1000).toFixed(0) + 'k'}
+              tickFormatter={(val) => '$' + (val / 1000).toFixed(0) + 'k'}
             />
             <YAxis
               dataKey="name"
