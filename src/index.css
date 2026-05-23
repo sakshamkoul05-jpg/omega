@@ -74,6 +74,11 @@ body {
   50% { border-color: var(--accent-primary); }
 }
 
+@keyframes shrink {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
 .skeleton {
   background: linear-gradient(
     90deg,

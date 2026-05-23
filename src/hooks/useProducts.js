@@ -1,70 +1,43 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useEffect } from 'react'
 import useUIStore from '../store/uiStore'
-import indianProducts from '../data/indianProducts'
 
 export function useProducts() {
-  const [state, setState] = useState({
-    products: [],
-    isLoading: true,
-    isError: false,
-    error: null,
-  })
+  const products = useUIStore((s) => s.products)
+  const productsLoaded = useUIStore((s) => s.productsLoaded)
+  const loadProducts = useUIStore((s) => s.loadProducts)
   const setDataUpdatedAt = useUIStore((s) => s.setDataUpdatedAt)
-  const intervalRef = useRef(null)
-
-  const loadProducts = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      isLoading: !prev.products.length,
-      isError: false,
-      error: null,
-    }))
-    setTimeout(() => {
-      setState({
-        products: indianProducts,
-        isLoading: false,
-        isError: false,
-        error: null,
-      })
-      setDataUpdatedAt(Date.now())
-    }, 300)
-  }, [setDataUpdatedAt])
 
   useEffect(() => {
-    loadProducts()
-    intervalRef.current = setInterval(() => {
+    if (!productsLoaded) {
+      loadProducts()
+    }
+  }, [productsLoaded, loadProducts])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
       setDataUpdatedAt(Date.now())
     }, 30000)
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [loadProducts, setDataUpdatedAt])
+    return () => clearInterval(interval)
+  }, [setDataUpdatedAt])
 
-  return state
+  return {
+    products,
+    isLoading: !productsLoaded,
+    isError: false,
+    error: null,
+    refetch: loadProducts,
+  }
 }
 
 export function useProduct(id) {
-  const [product, setProduct] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isError, setIsError] = useState(false)
-  const [error, setError] = useState(null)
+  const products = useUIStore((s) => s.products)
 
-  useEffect(() => {
-    setIsLoading(true)
-    setIsError(false)
-    setError(null)
-    setTimeout(() => {
-      const found = indianProducts.find((p) => p.id === Number(id))
-      if (found) {
-        setProduct(found)
-        setIsLoading(false)
-      } else {
-        setError(new Error('Product not found'))
-        setIsError(true)
-        setIsLoading(false)
-      }
-    }, 200)
-  }, [id])
+  const product = products.find((p) => p.id === Number(id))
 
-  return { data: product, isLoading, isError, error }
+  return {
+    data: product || null,
+    isLoading: !product && products.length > 0 ? false : !product,
+    isError: !product && products.length > 0,
+    error: !product && products.length > 0 ? new Error('Product not found') : null,
+  }
 }
