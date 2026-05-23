@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, ShoppingCart, ArrowLeft } from 'lucide-react'
 import { useProduct } from '../hooks/useProducts'
+import useUIStore from '../store/uiStore'
 import { getCategoryColor, getStockInfo, renderStars, formatPrice } from '../utils/formatters'
 import Skeleton from '../components/ui/Skeleton'
 import Badge from '../components/ui/Badge'
@@ -18,6 +19,17 @@ export default function ProductDetail() {
   }, [product])
 
   const images = product?.images?.length ? product.images : product?.thumbnail ? [product.thumbnail] : []
+
+  const handleCartClick = useCallback((e, product) => {
+    e.currentTarget.style.transform = 'scale(0.95)'
+    setTimeout(() => { e.currentTarget.style.transform = 'scale(1)' }, 150)
+    useUIStore.getState().handleWsEvent({
+      type: 'cart_add',
+      productId: product.id,
+      productTitle: product.title,
+      message: `${product.title} added to cart`,
+    })
+  }, [])
 
   const handlePrev = useCallback(() => {
     setActiveIndex((i) => (i === 0 ? images.length - 1 : i - 1))
@@ -289,15 +301,14 @@ export default function ProductDetail() {
           </div>
 
           <button
-            className="w-full mt-6 flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold transition-all"
+            onClick={(e) => handleCartClick(e, product)}
+            className="w-full mt-6 flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold transition-all duration-150"
             style={{
               backgroundColor: 'var(--accent-primary)',
               color: '#080B14',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-            onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
-            onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
+            onMouseEnter={(e) => { if (!e.currentTarget.style.transform || e.currentTarget.style.transform === 'none' || e.currentTarget.style.transform === 'matrix(1, 0, 0, 1, 0, 0)') e.currentTarget.style.transform = 'scale(1.02)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
           >
             <ShoppingCart size={18} />
             Add to Cart — {formatPrice(product.price)}

@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, Package, BarChart3, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { LayoutDashboard, Package, BarChart3, ChevronLeft, ChevronRight, X, LogOut, Settings, User } from 'lucide-react'
+import { useState } from 'react'
 import useUIStore from '../../store/uiStore'
 
 const navItems = [
@@ -11,6 +12,7 @@ const navItems = [
 
 function SidebarContent({ collapsed, onClose }) {
   const location = useLocation()
+  const [profileOpen, setProfileOpen] = useState(false)
 
   return (
     <div
@@ -63,32 +65,71 @@ function SidebarContent({ collapsed, onClose }) {
         })}
       </nav>
 
-      <div
-        className="flex items-center gap-3 px-4 py-4 border-t"
-        style={{ borderColor: 'var(--bg-border)' }}
-      >
-        <div
-          className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold"
-          style={{ backgroundColor: 'rgba(124,58,237,0.2)', color: 'var(--accent-glow)' }}
+      <div className="relative">
+        <button
+          onClick={() => setProfileOpen(!profileOpen)}
+          onBlur={() => setTimeout(() => setProfileOpen(false), 150)}
+          className="flex items-center gap-3 w-full px-4 py-4 border-t transition-colors hover:bg-[var(--bg-elevated)]"
+          style={{ borderColor: 'var(--bg-border)' }}
         >
-          AU
-        </div>
-        {!collapsed && (
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-              Admin User
-            </p>
-            <span
-              className="text-xs px-1.5 py-0.5 rounded"
+          <div
+            className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold"
+            style={{ backgroundColor: 'rgba(124,58,237,0.2)', color: 'var(--accent-glow)' }}
+          >
+            AU
+          </div>
+          {!collapsed && (
+            <div className="flex-1 min-w-0 text-left">
+              <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+                Admin User
+              </p>
+              <span
+                className="text-xs px-1.5 py-0.5 rounded"
+                style={{
+                  backgroundColor: 'rgba(232,255,71,0.1)',
+                  color: 'var(--accent-primary)',
+                }}
+              >
+                Admin
+              </span>
+            </div>
+          )}
+        </button>
+
+        <AnimatePresence>
+          {profileOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              className="absolute bottom-full left-3 right-3 mb-2 rounded-xl overflow-hidden shadow-lg z-50"
               style={{
-                backgroundColor: 'rgba(232,255,71,0.1)',
-                color: 'var(--accent-primary)',
+                backgroundColor: 'var(--bg-elevated)',
+                border: '1px solid var(--bg-border)',
               }}
             >
-              Admin
-            </span>
-          </div>
-        )}
+              {[
+                { icon: User, label: 'Profile' },
+                { icon: Settings, label: 'Settings' },
+                { icon: LogOut, label: 'Logout', danger: true },
+              ].map((item) => (
+                <button
+                  key={item.label}
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-3 w-full px-4 py-2.5 text-sm transition-colors"
+                  style={{
+                    color: item.danger ? 'var(--danger)' : 'var(--text-muted)',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-border)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                >
+                  <item.icon size={15} />
+                  {item.label}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )

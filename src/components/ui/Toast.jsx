@@ -7,6 +7,7 @@ const icons = {
   stock_update: ShoppingCart,
   new_review: Star,
   restock: Package,
+  cart_add: ShoppingCart,
 }
 
 const colors = {
@@ -14,6 +15,7 @@ const colors = {
   stock_update: 'var(--warning)',
   new_review: '#FFB347',
   restock: 'var(--success)',
+  cart_add: 'var(--accent-primary)',
 }
 
 function ToastItem({ event, onDismiss }) {
