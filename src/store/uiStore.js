@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import indianProducts from '../data/indianProducts'
 
 const DEFAULT_COLUMNS = [
   { id: 'image', label: 'Image', visible: true, order: 0 },
@@ -22,7 +21,7 @@ function applyProductUpdate(products, event) {
   })
 }
 
-const useUIStore = create((set, get) => ({
+const useUIStore = create((set) => ({
   sidebarCollapsed: false,
   sidebarOpen: false,
   columns: DEFAULT_COLUMNS,
@@ -49,11 +48,9 @@ const useUIStore = create((set, get) => ({
 
   setDataUpdatedAt: (timestamp) => set({ dataUpdatedAt: timestamp }),
 
-  loadProducts: () => set({
-    products: indianProducts,
-    productsLoaded: true,
-    dataUpdatedAt: Date.now(),
-  }),
+  setProducts: (products) => set({ products }),
+
+  setProductsLoaded: (loaded) => set({ productsLoaded: loaded }),
 
   handleWsEvent: (event) => set((state) => ({
     products: applyProductUpdate(state.products, event),

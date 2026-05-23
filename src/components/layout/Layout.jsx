@@ -4,7 +4,6 @@ import Sidebar from './Sidebar'
 import TopNav from './TopNav'
 import Toast from '../ui/Toast'
 import useUIStore from '../../store/uiStore'
-import indianProducts from '../../data/indianProducts'
 
 const pageTitles = {
   '/': 'Dashboard',
